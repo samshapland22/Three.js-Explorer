@@ -23,11 +23,11 @@ const matcapTexture3 = new THREE.TextureLoader().load('img/chrome.png');
 ballMaterial3.matcap = matcapTexture3;
 
 const crystal = new THREE.Mesh(
-  new THREE.IcosahedronGeometry(1, 0),
+  new THREE.IcosahedronGeometry(8, 0),
   ballMaterial2
 );
 crystal.position.x = 0;
-crystal.position.y = 2;
+crystal.position.y = 20;
 crystal.position.z = 0;
 scene.add(crystal);
 
