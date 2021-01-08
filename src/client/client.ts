@@ -4,27 +4,33 @@ import Stats from '/jsm/libs/stats.module';
 import { Reflector } from '/jsm/objects/Reflector';
 
 const scene: THREE.Scene = new THREE.Scene();
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(5);
+// scene.add(axesHelper);
 
 const light = new THREE.AmbientLight();
 scene.add(light);
 
-// const boxGeometry: THREE.BoxGeometry = new THREE.BoxGeometry();
-// const sphereGeometry: THREE.SphereGeometry = new THREE.SphereGeometry()
-// const icosahedronGeometry: THREE.IcosahedronGeometry = new THREE.IcosahedronGeometry(1, 0)
-// const planeGeometry: THREE.PlaneGeometry = new THREE.PlaneGeometry()
-// const torusKnotGeometry: THREE.TorusKnotGeometry = new THREE.TorusKnotGeometry()
-
-// const cubeMaterial: THREE.MeshNormalMaterial = new THREE.MeshNormalMaterial();
-
-// const cube: THREE.Mesh = new THREE.Mesh(boxGeometry, cubeMaterial);
-// cube.position.x = 5;
-// scene.add(cube);
-
 const ballMaterial: THREE.MeshMatcapMaterial = new THREE.MeshMatcapMaterial();
 const matcapTexture = new THREE.TextureLoader().load('img/matcap.png');
 ballMaterial.matcap = matcapTexture;
+
+const ballMaterial2: THREE.MeshMatcapMaterial = new THREE.MeshMatcapMaterial();
+const matcapTexture2 = new THREE.TextureLoader().load('img/crystal-matcap.png');
+ballMaterial2.matcap = matcapTexture2;
+
+const ballMaterial3: THREE.MeshMatcapMaterial = new THREE.MeshMatcapMaterial();
+const matcapTexture3 = new THREE.TextureLoader().load('img/chrome.png');
+ballMaterial3.matcap = matcapTexture3;
+
+const crystal = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(1, 0),
+  ballMaterial2
+);
+crystal.position.x = 0;
+crystal.position.y = 2;
+crystal.position.z = 0;
+scene.add(crystal);
+
 const ball = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 8), ballMaterial);
 ball.position.z = -1.5;
 ball.position.y = -0.5;
@@ -67,25 +73,11 @@ groundMirror.position.y = -0.05;
 groundMirror.rotateX(-Math.PI / 2);
 scene.add(groundMirror);
 
-const planeGeometry: THREE.PlaneGeometry = new THREE.PlaneGeometry(
-  100,
-  100,
-  50,
-  50
-);
-const material: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({
-  color: 0x0000ff,
-  wireframe: true,
-});
-const plane: THREE.Mesh = new THREE.Mesh(planeGeometry, material);
-plane.rotateX(-Math.PI / 2);
-scene.add(plane);
-
 const backGroundTexture: THREE.CubeTexture = new THREE.CubeTextureLoader().load(
   [
     'img/lights.png',
     'img/lights.png',
-    'img/greensky.png',
+    'img/nightsky.png',
     'img/lights.png',
     'img/lights.png',
     'img/lights.png',
@@ -93,40 +85,33 @@ const backGroundTexture: THREE.CubeTexture = new THREE.CubeTextureLoader().load(
 );
 scene.background = backGroundTexture;
 
-// let cubes: THREE.Mesh[] = new Array();
-// for (let i = 0; i < 100; i++) {
-//   const geo: THREE.BoxGeometry = new THREE.BoxGeometry(
-//     Math.random() * 4,
-//     Math.random() * 16,
-//     Math.random() * 4
-//   );
-//   const mat: THREE.MeshBasicMaterial = new THREE.MeshBasicMaterial({
-//     wireframe: true,
-//   });
-//   switch (i % 3) {
-//     case 0:
-//       mat.color = new THREE.Color(0xff0000);
-//       break;
-//     case 1:
-//       mat.color = new THREE.Color(0xffff00);
-//       break;
-//     case 2:
-//       mat.color = new THREE.Color(0x0000ff);
-//       break;
-//   }
-//   const cube = new THREE.Mesh(geo, mat);
-//   cubes.push(cube);
-// }
-// cubes.forEach((c) => {
-//   c.position.x = Math.random() * 100 - 50;
-//   c.position.z = Math.random() * 100 - 50;
-//   c.geometry.computeBoundingBox();
-//   c.position.y =
-//     ((c.geometry.boundingBox as THREE.Box3).max.y -
-//       (c.geometry.boundingBox as THREE.Box3).min.y) /
-//     2;
-//   scene.add(c);
-// });
+let spheres: THREE.Mesh[] = new Array();
+for (let i = 0; i < 80; i++) {
+  const geo: THREE.SphereGeometry = new THREE.SphereGeometry(Math.random() * 4);
+  const orb = new THREE.Mesh(geo, ballMaterial);
+  spheres.push(orb);
+}
+
+spheres.forEach((s) => {
+  s.position.x = Math.random() * 100 - 50;
+  s.position.z = Math.random() * 100 - 50;
+  s.position.y = Math.random() * 5;
+  scene.add(s);
+});
+
+let knots: THREE.Mesh[] = new Array();
+for (let i = 0; i < 80; i++) {
+  const geo: THREE.TorusGeometry = new THREE.TorusGeometry(Math.random() * 2);
+  const knot = new THREE.Mesh(geo, ballMaterial3);
+  knots.push(knot);
+}
+
+knots.forEach((kn) => {
+  kn.position.x = Math.random() * 100 - 50;
+  kn.position.z = Math.random() * 100 - 50;
+  kn.position.y = Math.random() * 15;
+  scene.add(kn);
+});
 
 camera.position.y = 1;
 camera.position.z = 2;
@@ -163,10 +148,16 @@ document.body.appendChild(stats.dom);
 var animate = function () {
   requestAnimationFrame(animate);
 
-  //controls.update()
-
   ball.rotation.x += 0.01;
   ball.rotation.y += 0.01;
+
+  knots.forEach((kn) => {
+    kn.rotation.x += 0.01;
+    kn.rotation.y += 0.01;
+  });
+
+  crystal.rotation.x += 0.01;
+  crystal.rotation.y += 0.01;
 
   render();
 
