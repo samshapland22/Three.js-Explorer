@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/samshapland22/Three.js-Explorer#readme",
   "dependencies": {
+    "@types/dat.gui": "^0.7.6",
     "@types/express": "^4.17.9",
     "@types/node": "^14.14.20",
     "express": "^4.17.1",

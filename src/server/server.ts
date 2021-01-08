@@ -28,6 +28,15 @@ class App {
       )
     );
     app.use(
+      '/jsm/controls/DragControls',
+      express.static(
+        path.join(
+          __dirname,
+          '../../node_modules/three/examples/jsm/controls/DragControls.js'
+        )
+      )
+    );
+    app.use(
       '/jsm/libs/stats.module',
       express.static(
         path.join(

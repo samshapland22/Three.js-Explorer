@@ -1,7 +1,10 @@
 import * as THREE from '/build/three.module.js';
 import { PointerLockControls } from '/jsm/controls/PointerLockControls';
+import { OrbitControls } from '/jsm/controls/OrbitControls';
+import { DragControls } from '/jsm/controls/DragControls';
 import Stats from '/jsm/libs/stats.module';
 import { Reflector } from '/jsm/objects/Reflector';
+import { GUI } from '/jsm/libs/dat.gui.module';
 
 const scene: THREE.Scene = new THREE.Scene();
 // const axesHelper = new THREE.AxesHelper(5);
@@ -31,7 +34,10 @@ crystal.position.y = 20;
 crystal.position.z = 0;
 scene.add(crystal);
 
-const ball = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 8), ballMaterial);
+const ball = new THREE.Mesh(
+  new THREE.SphereGeometry(0.3, 16, 8),
+  ballMaterial3
+);
 ball.position.z = -1.5;
 ball.position.y = -0.5;
 
@@ -130,6 +136,23 @@ const onKeyDown = function (event) {
     case 68: // d
       controls.moveRight(0.25);
       break;
+    case 32:
+      controls.disconnect();
+      const orbitControls = new OrbitControls(camera, renderer.domElement);
+      const dragControls = new DragControls(
+        [crystal],
+        camera,
+        renderer.domElement
+      );
+      dragControls.addEventListener('hoveron', function () {
+        orbitControls.enabled = false;
+      });
+      dragControls.addEventListener('hoveroff', function () {
+        orbitControls.enabled = true;
+      });
+      break;
+    case 13:
+      controls.connect();
   }
 };
 document.addEventListener('keydown', onKeyDown, false);
@@ -144,6 +167,33 @@ function onWindowResize() {
 
 const stats = Stats();
 document.body.appendChild(stats.dom);
+
+var crystalData = {
+  color: ballMaterial2.color.getHex(),
+};
+
+const gui = new GUI();
+const crystalFolder = gui.addFolder('Crystal');
+crystalFolder.add(crystal, 'visible', true);
+crystalFolder.add(ballMaterial2, 'transparent');
+crystalFolder.add(ballMaterial2, 'opacity', 0, 1, 0.01);
+crystalFolder.addColor(crystalData, 'color').onChange(() => {
+  ballMaterial2.color.setHex(
+    Number(crystalData.color.toString().replace('#', '0x'))
+  );
+});
+crystalFolder.add(crystal.position, 'y', -10, 30);
+crystalFolder.add(crystal.scale, 'x', -3, 3, 0.1);
+crystalFolder.add(crystal.scale, 'y', -3, 3, 0.1);
+crystalFolder.add(crystal.scale, 'z', -3, 3, 0.1);
+
+const goldFolder = gui.addFolder('Gold Orbs');
+goldFolder.add(ballMaterial, 'transparent');
+goldFolder.add(ballMaterial, 'opacity', 0, 1, 0.01);
+
+const chromeFolder = gui.addFolder('Chrome Objects');
+chromeFolder.add(ballMaterial3, 'transparent');
+chromeFolder.add(ballMaterial3, 'opacity', 0, 1, 0.01);
 
 var animate = function () {
   requestAnimationFrame(animate);
