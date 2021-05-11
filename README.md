@@ -1,2 +1,2 @@
 # Three.js-Explorer
-a very basic three.js project
+a simple Three.js project
